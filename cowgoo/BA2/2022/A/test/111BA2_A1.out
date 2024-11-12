@@ -1,0 +1,23 @@
+# ###  ###       ##  ##           ###  #  ##             ##     ##    # 
+#  #    #         #   #            #  ##  #               #      #    # 
+#  #    #         #   #            #  ##  #               #      #    # 
+#  ######   ###   #   #   ####      # ##  #   ####  ####  #   ####    # 
+#  #    #  #   #  #   #  ##  ##     ### ##   ##  ##  # #  #  #   #    # 
+#  #    #  #####  #   #  #    #     ##  ##   #    #  #    #  #   #    # 
+#  #    #  #      #   #  ##  ##     ##  ##   ##  ##  #    #  #   #      
+# ###  ###  #### ### ###  ####       #  #     ####  ###  ###  #####   # 
+# 
+
+"""
+Lex is a computer program that generates lexical analyzers ("scanners" or "lexers").
+
+Lex is commonly used with the yacc parser generator. Lex, 
+originally written by Mike Lesk and Eric Schmidt and described in 1975,
+ is the standard lexical analyzer generator on many Unix systems, 
+ and an equivalent tool is specified as part of the POSIX standard.
+
+Lex reads an input stream specifying the lexical analyzer and 
+writes source code which implements the lexical analyzer in the C programming language.
+
+In addition to C, some old versions of Lex could generate a lexer in Ratfor.
+"""

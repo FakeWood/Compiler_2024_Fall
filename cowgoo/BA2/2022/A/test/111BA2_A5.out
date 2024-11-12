@@ -1,0 +1,15 @@
+if False:
+	# 111
+	print("11111")
+	"""
+	cout << " -----" << endl;
+	"""
+"""
+if(false) {
+	cout << "12345" << endl;
+}
+"""
+# cout << "12345" << endl;
+if True:
+	if True:
+		print("hehe")
