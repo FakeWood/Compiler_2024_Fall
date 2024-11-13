@@ -8,7 +8,6 @@ INTEGER     ^[+\-]?[0-9]+$
 FLOAT       ^[+\-]?[0-9]*\.[0-9]+$
 STRING      ^\"[^\"\n]+\"\n|^\'[^\'\n]+\'\n
 VARIABLE    ^[a-zA-Z\_][a-zA-Z0-9\_]*$
-
 %%
 
 {INTEGER}     {ECHO; printf(" INTERGER\n");}
