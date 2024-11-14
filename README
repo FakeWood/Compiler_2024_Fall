@@ -1,3 +1,3 @@
 # 大三上編譯器
 
-lex 編譯: flex A.l && gcc lex.yy.c && del lex.yy.c && a.exe < test\111BA2_A1.in > out && fc test\111BA2_A1.out out
+lex 編譯: flex A.l && gcc lex.yy.c && del lex.yy.c && a.exe < test\1.in > out && fc test\1.out out
