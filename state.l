@@ -14,3 +14,4 @@
 %%
 
 */
+printf("yyleng: %d, curTab: %d\n", yyleng, curTab);
