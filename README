@@ -1,3 +1,16 @@
 # 大三上編譯器
 
-lex 編譯: flex A.l && gcc lex.yy.c && del lex.yy.c && a.exe < test\1.in > out && fc test\1.out out
+## lex 編譯
+
+- flex A.l: 產生 `lex.yy.c`
+- flex A.l && gcc lex.yy.c
+- flex A.l && gcc lex.yy.c && del lex.yy.c && a.exe < test\1.in > out && fc test\1.out out
+
+## yacc 編譯
+
+- bison -d A.y: 產生 `A.tab.c`、`A.tab.h`
+
+## lex + yacc
+
+- flex A.l && bison -d A.y && gcc lex.yy.c A.tab.c
+- `flex A.l && bison -d A.y && gcc lex.yy.c A.tab.c && del lex.yy.c *.tab.* && a.exe < test\1.in > out && fc test\1.out out`
