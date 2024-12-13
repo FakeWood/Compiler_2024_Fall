@@ -17,6 +17,7 @@ INTEGER     ^[+\-]?[0-9]+$
 "mod"         {return MOD;}
 "inc"         {return INC;}
 "dec"         {return DEC;}
+$             {return END;}
 .
 
 %%

@@ -16,6 +16,7 @@ int ival;
 %token LOAD
 %token ADD SUB MUL MOD
 %token INC DEC
+%token END
 
 %%
 
@@ -33,7 +34,7 @@ line: LOAD NUM  {stack[++sp] = $2;}
     | MOD       {stack[sp--] %= stack[sp];}
     | INC       {stack[sp] += 1;}
     | DEC       {stack[sp] -= 1;}
-
+    | END       {printf("%d\n", stack[sp]);}
 
 %%
 
