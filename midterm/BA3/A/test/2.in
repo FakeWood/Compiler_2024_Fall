@@ -1,4 +1,1 @@
-load 3
-load 4
-inc
-inc
+f(g(2, 3))

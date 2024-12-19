@@ -1,1 +1,12 @@
-Semantic error on col 19
+Push train 1 to holding track
+Current holding track: 1
+Push train 2 to holding track
+Current holding track: 1 2
+Push train 3 to holding track
+Current holding track: 1 2 3
+Push train 4 to holding track
+Current holding track: 1 2 3 4
+Train 5 passing through
+Moving train 4 from holding track
+Error: Impossible to rearrange
+The first train in the holding track is train 3 instead of train 1

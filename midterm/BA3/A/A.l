@@ -5,19 +5,13 @@
 
 %option noyywrap
 
-INTEGER     [+\-]?[0-9]+$
+NUMBER     -?[0-9]+(.[0-9]+)?
 
 %%
 
-{INTEGER}     {yylval.ival = atoi(yytext); return NUM;}
-"load"        {return LOAD;}
-"add"         {return ADD;}
-"sub"         {return SUB;}
-"mul"         {return MUL;}
-"mod"         {return MOD;}
-"inc"         {return INC;}
-"dec"         {return DEC;}
-"\n" | "t"    {}
-.             {}
+{NUMBER}                     {yylval.fval = atof(yytext); return NUM;}
+"f"|"g"|"h"|"("|")"|","      {return yytext[0];}
+"\n"|"t"                     {}
+.                            {}
 
 %%

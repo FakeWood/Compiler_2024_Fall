@@ -1,1 +1,7 @@
-Semantic error on col 16
+Train 1 passing through
+Train 2 passing through
+Train 3 passing through
+Push train 4 to holding track
+Current holding track: 4
+Train 5 passing through
+Error: There is still existing trains in the holding track
