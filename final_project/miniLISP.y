@@ -9,6 +9,7 @@ using namespace std;
 
 int useLog = 0;
 int step = 0; 
+string str = "";
 struct variable {
     int type;
     int val;
@@ -27,7 +28,7 @@ int ival;
 struct {
     int type;
     int val;
-    char *name;
+    char name[];
     int retType;
 } unit;
 }
@@ -155,10 +156,10 @@ not_op : '(' NOT expr ')'               { if($3.type != BOOL){ yyerror("type"); 
 /* --- logical operation --- */
 
 /* --- define --- */
-def_stmt : '(' DEF var expr ')'     { printf("var: %s\n", $3.name); if(var_map.count(string($3.name)) != 0){ printf("ERROR: re-define var\n"); } else { var_map[string($3.name)] = {$4.type, $4.val}; } }// printf("%s: %d\n", $3.name, $4.val);} }
+def_stmt : '(' DEF var expr ')'     { if(var_map.count(string($3.name)) != 0){ printf("ERROR: re-define var\n"); } else { var_map[string($3.name)] = {$4.type, $4.val}; } }// printf("%s: %d\n", $3.name, $4.val);} }
 ;
 
-var : ID                            { if(var_map.count(string($1.name)) == 0) { string tmp = string($1.name); strcpy($$.name, tmp.c_str()); } else { $$.type = var_map[string($1.name)].type; $$.val = var_map[string($1.name)].val; } printf("ID: %s\n", $$.name);}
+var : ID                            { if(var_map.count(string($1.name)) == 0) { strcpy($$.name, $1.name); } else { $$.type = var_map[string($1.name)].type; $$.val = var_map[string($1.name)].val; } }
 ;
 /* --- define --- */
 

@@ -33,7 +33,7 @@ BOOL       "#t"|"#f"
                              return IF;
                          }
                          else {
-                             yylval.unit.name = yytext;
+                             strcpy(yylval.unit.name, yytext);
                              return ID;
                          } 
                         }
