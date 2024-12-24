@@ -1,13 +1,15 @@
 #!/bin/bash
 
+FILE="final"
+
 # 編譯 Lex 檔案
-flex miniLISP.l
+flex "$FILE.l"
 
 # 編譯 Yacc 檔案
-bison -d miniLISP.y
+bison -d "$FILE.y"
 
 # 編譯並連結
-g++ lex.yy.c miniLISP.tab.c
+g++ lex.yy.c "$FILE.tab.c"
 
 # 成功訊息
 echo "Compilation complete."

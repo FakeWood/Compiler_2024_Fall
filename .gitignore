@@ -2,3 +2,4 @@
 *.exe
 lex.yy.c
 out
+__pycache__/
