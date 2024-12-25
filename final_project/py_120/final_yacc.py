@@ -1,14 +1,15 @@
 import ply.yacc as yacc
 from final_lex import tokens
 
-# 紀錄變數的全域表
+# 紀錄變數的globl set
 variables = {}
 
-
+# Evaluate AST Node
 def evaluate(node, local_scope=None):
-    # Evaluate AST Node with global and local scope handling.
-    scope = local_scope or {}  # 使用局部作用域，默認為全局作用域
-    if isinstance(node, tuple):  # 還需要繼續 evaluate 下去
+    
+    scope = local_scope or {}  # if no local scope, create one
+
+    if type(node) == tuple:  # 還需要繼續 evaluate 下去
         op = node[0]
         if op == '+':
             values = [evaluate(exp, scope) for exp in node[1]]
@@ -85,25 +86,25 @@ def evaluate(node, local_scope=None):
             # 定義全局變數
             variables[node[1]] = evaluate(node[2], scope)
         elif op == 'FUN':  # 函數定義
-            _, arg_names, body = node
+            _, params, body = node
             if isinstance(body, tuple) and body[0] == 'NDEF':  # 有巢狀定義
                 evaluate(body[1], scope)
-                return ('FUN', arg_names, body[2], scope) # 存環境
+                return ('FUN', params, body[2], scope) # 存環境
             else:
-                return ('FUN', arg_names, body, scope) # 存環境
+                return ('FUN', params, body, scope) # 存環境
         elif op == 'CALL':  # 函數調用
-            function = evaluate(node[1], scope)  # node[1] 是 FUNC_EXP 或 ID
-            params = [evaluate(param, scope) for param in node[2]]
+            function = evaluate(node[1], scope)  # node[1] 是 FUNC_expr 或 ID
+            args = [evaluate(param, scope) for param in node[2]]
 
-            if isinstance(function, tuple) and function[0] == 'FUN':
-                _, arg_names, body, closure_scope = function
-                local_scope = {**closure_scope, **dict(zip(arg_names, params))}  # 參數名綁引數值，解包並合併字典，這邊應會導致閉包脫鉤，但測資不會重新賦值給變數
+            if type(function) == tuple and function[0] == 'FUN':
+                _, params, body, closure_scope = function
+                local_scope = {**closure_scope, **dict(zip(params, args))}  # 參數名綁引數值，解包並合併字典，這邊應會導致閉包跟原scope脫鉤，但測資不會重新賦值給變數
                 return evaluate(body, local_scope)
             elif isinstance(function, str) and function in variables:  # 已定義的命名函式
                 fun_def = variables[function]
                 if isinstance(fun_def, tuple) and fun_def[0] == 'FUN':
-                    _, arg_names, body, closure_scope = fun_def
-                    local_scope = {**closure_scope, **dict(zip(arg_names, params))}
+                    _, params, body, closure_scope = fun_def
+                    local_scope = {**closure_scope, **dict(zip(params, args))}
                     return evaluate(body, local_scope)
             raise Exception(f"Invalid function call: {function}")
         elif op == 'IF':
@@ -113,7 +114,7 @@ def evaluate(node, local_scope=None):
             return evaluate(node[2] if condition else node[3], scope)
         elif op == 'print-num':
             value = evaluate(node[1], scope)
-            if not isinstance(value, int):
+            if not type(value) == int:
                 raise TypeError(f"print-num expects an integer, but got: {value}")
             print(value)
         elif op == 'print-bool':
@@ -123,79 +124,72 @@ def evaluate(node, local_scope=None):
             print('#t' if value else '#f')
         else:
             raise Exception(f"Unsupported operation: {op}")
-    elif isinstance(node, str):  # 查找變數
+    elif type(node) == str:  # look up for variable
         if node in scope:
-            return scope[node]  # 局部作用域中的變數
+            return scope[node]  # first, look up in local scope
         elif node in variables:
-            return variables[node]  # 全局作用域中的變數
+            return variables[node]  # sevond, look up in global scope
         else:
             raise Exception(f"Undefined variable: {node}")
     else:
-        return node  # 常數值直接返回
+        return node  # 常數值(常數或是運算結果)直接把值回傳
 
 
-
-
-
-
-
-
-# 定義語法規則
+# --- Grammar ---
 def p_program(p):
-    '''PROGRAM : STMT_LIST'''
+    '''program : stmt_list'''
     p[0] = p[1]
 
 def p_stmt_list(p):
-    '''STMT_LIST : STMT
-                 | STMT STMT_LIST'''
+    '''stmt_list : stmt
+                 | stmt stmt_list'''
     p[0] = [p[1]] if len(p) == 2 else [p[1]] + p[2]
 
 def p_stmt(p):
-    '''STMT : EXP
-            | DEF_STMT
-            | PRINT_STMT'''
+    '''stmt : expr
+            | def_stmt
+            | print_stmt'''
     p[0] = p[1]
 
 def p_print_stmt(p):
-    '''PRINT_STMT : LPAREN PRINT_NUM EXP RPAREN
-                  | LPAREN PRINT_BOOL EXP RPAREN'''
+    '''print_stmt : LPAREN PRINT_NUM expr RPAREN
+                  | LPAREN PRINT_BOOL expr RPAREN'''
     p[0] = (p[2], p[3])
 
 def p_exp(p):
-    '''EXP : BOOL_VAL
+    '''expr : BOOL_VAL
            | NUMBER
            | ID
-           | NUM_OP
-           | LOGICAL_OP
-           | FUN_EXP
-           | FUN_CALL
-           | IF_EXP'''
+           | num_op
+           | logical_op
+           | func_expr
+           | func_call
+           | if_expr'''
     p[0] = p[1]
 
 def p_num_op(p):
-    '''NUM_OP : LPAREN PLUS EXP EXP_LIST RPAREN
-              | LPAREN MINUS EXP EXP RPAREN
-              | LPAREN MULTIPLY EXP EXP_LIST RPAREN
-              | LPAREN DIVIDE EXP EXP RPAREN
-              | LPAREN MODULUS EXP EXP RPAREN
-              | LPAREN GREATER EXP EXP RPAREN
-              | LPAREN SMALLER EXP EXP RPAREN
-              | LPAREN EQUAL EXP EXP_LIST RPAREN'''
+    '''num_op : LPAREN PLUS expr expr_list RPAREN
+              | LPAREN MINUS expr expr RPAREN
+              | LPAREN MULTIPLY expr expr_list RPAREN
+              | LPAREN DIVIDE expr expr RPAREN
+              | LPAREN MODULUS expr expr RPAREN
+              | LPAREN GREATER expr expr RPAREN
+              | LPAREN SMALLER expr expr RPAREN
+              | LPAREN EQUAL expr expr_list RPAREN'''
     if p[2] in ['+', '*', '=']:
         p[0] = (p[2], [p[3]] + (p[4] if isinstance(p[4], list) else [p[4]]))
     else:
         p[0] = (p[2], p[3], p[4])
 
 def p_exp_list(p):
-    '''EXP_LIST : EXP
-                | EXP EXP_LIST'''
+    '''expr_list : expr
+                | expr expr_list'''
     p[0] = [p[1]] if len(p) == 2 else [p[1]] + p[2]
 
-# 邏輯運算
 def p_logical_op(p):
-    '''LOGICAL_OP : LPAREN AND EXP EXP_LIST RPAREN
-                  | LPAREN OR EXP EXP_LIST RPAREN
-                  | LPAREN NOT EXP RPAREN'''
+    '''logical_op : LPAREN AND expr expr_list RPAREN
+                  | LPAREN OR expr expr_list RPAREN
+                  | LPAREN NOT expr RPAREN'''
     if p[2] == 'and':
         p[0] = ('AND', [p[3]] + p[4])
     if p[2] == 'or':
@@ -204,71 +198,68 @@ def p_logical_op(p):
         p[0] = ('NOT', p[3])
 
 def p_def_stmt(p):
-    '''DEF_STMT : LPAREN DEFINE ID EXP RPAREN'''
+    '''def_stmt : LPAREN DEFINE ID expr RPAREN'''
     p[0] = ('DEFINE', p[3], p[4])
 
-# 函式
-# 支援函數定義
+# --- function ---
 def p_fun_exp(p):
-    '''FUN_EXP : LPAREN FUN LPAREN FUN_IDS RPAREN FUN_BODY RPAREN'''
+    '''func_expr : LPAREN FUN LPAREN func_params RPAREN func_body RPAREN'''
     p[0] = ('FUN', p[4], p[6])  # 定義函數，包含參數列表和函數本體
 
-# 定義函數參數
 def p_fun_ids(p):
-    '''FUN_IDS : 
-               | ID FUN_IDS'''
+    '''func_params : 
+               | ID func_params'''
     if len(p) == 1:
         p[0] = []
     else:
         p[0] = [p[1]] + p[2]
 
-# 函數本體
 def p_fun_body(p):
-    '''FUN_BODY : EXP
-                | DEF_STMT EXP'''
+    '''func_body : expr
+                | def_stmt expr'''
     if len(p) == 2:
         p[0] = p[1]
     else:
-        p[0] = ('NDEF', p[1], p[2])
+        p[0] = ('NDEF', p[1], p[2])  # Nested Define
 
-# 支援函數調用
 def p_fun_call(p):
-    '''FUN_CALL : LPAREN FUN_EXP PARAM_LIST RPAREN
-                | LPAREN ID PARAM_LIST RPAREN'''
+    '''func_call : LPAREN func_expr param_list RPAREN
+                | LPAREN ID param_list RPAREN'''
     if p[2][0] == 'FUN':
         p[0] = ('CALL', p[2], p[3])  # 匿名函數
     else:
         p[0] = ('CALL', p[2], p[3])  # 命名函數
 
-# 參數列表
 def p_param_list(p):
-    '''PARAM_LIST : 
-                  | PARAM PARAM_LIST'''
+    '''param_list : 
+                  | param param_list'''
     if len(p) == 1:
         p[0] = []
     else:
         p[0] = [p[1]] + p[2]
 
-# 參數
 def p_param(p):
-    '''PARAM : EXP'''
+    '''param : expr'''
     p[0] = p[1]
+# --- function ---
 
-# 條件判斷
 def p_if_exp(p):
-    '''IF_EXP : LPAREN IF EXP EXP EXP RPAREN'''
+    '''if_expr : LPAREN IF expr expr expr RPAREN'''
     p[0] = ('IF', p[3], p[4], p[5])
+# --- Grammar ---
 
-# 錯誤處理
+
+
+# error handling
 def p_error(p):
     print(f"Syntax Error: {p}")
     print("-" * 40)
 
-# 建立語法分析器
+# build parser
 parser = yacc.yacc()
 
-# '''
-# 測試輸入
+'''
+# debug mode
 if __name__ == "__main__":
     data = """
     (define dist-square
@@ -280,4 +271,4 @@ if __name__ == "__main__":
     """
     result = parser.parse(data,debug=True)
     print(result)
-# '''
+'''
