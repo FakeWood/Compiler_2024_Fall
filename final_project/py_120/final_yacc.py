@@ -87,7 +87,7 @@ def evaluate(node, local_scope=None):
             variables[node[1]] = evaluate(node[2], scope)
         elif op == 'FUN':  # 函數定義
             _, params, body = node
-            if isinstance(body, tuple) and body[0] == 'NDEF':  # 有巢狀定義
+            if type(body) == tuple and body[0] == 'NDEF':  # 有巢狀定義
                 evaluate(body[1], scope)
                 return ('FUN', params, body[2], scope) # 存環境
             else:
@@ -100,9 +100,9 @@ def evaluate(node, local_scope=None):
                 _, params, body, closure_scope = function
                 local_scope = {**closure_scope, **dict(zip(params, args))}  # 參數名綁引數值，解包並合併字典，這邊應會導致閉包跟原scope脫鉤，但測資不會重新賦值給變數
                 return evaluate(body, local_scope)
-            elif isinstance(function, str) and function in variables:  # 已定義的命名函式
+            elif type(function) == str and function in variables:  # 已定義的命名函式
                 fun_def = variables[function]
-                if isinstance(fun_def, tuple) and fun_def[0] == 'FUN':
+                if type(fun_def) == tuple and fun_def[0] == 'FUN':
                     _, params, body, closure_scope = fun_def
                     local_scope = {**closure_scope, **dict(zip(params, args))}
                     return evaluate(body, local_scope)
@@ -177,7 +177,7 @@ def p_num_op(p):
               | LPAREN SMALLER expr expr RPAREN
               | LPAREN EQUAL expr expr_list RPAREN'''
     if p[2] in ['+', '*', '=']:
-        p[0] = (p[2], [p[3]] + (p[4] if isinstance(p[4], list) else [p[4]]))
+        p[0] = (p[2], [p[3]] + (p[4] if type(p[4]) == list else [p[4]]))
     else:
         p[0] = (p[2], p[3], p[4])
 
