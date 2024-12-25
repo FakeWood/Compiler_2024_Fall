@@ -3,7 +3,7 @@ import ply.yacc as yacc
 from final_lex import tokens
 from final_yacc import parser, evaluate
 
-FOLDER = "./final_project/public_test_data"
+FOLDER = "./final_project/hidden_test_data"
 
 def process_lsp_files(folder_path):
     # find folder

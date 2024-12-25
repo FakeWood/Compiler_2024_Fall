@@ -81,14 +81,14 @@ def t_error(t):
 lexer = lex.lex()
 
 # debug
-'''
-if __name__ == "__main__":
-    data = """
-    (define x 10)
-    (define y (if (> x 5) (+ x 5) (- x 5)))
-    (print-num y)
-    """
-    lexer.input(data)
-    while token := lexer.token():
-        print(token)
-'''
+# '''
+# if __name__ == "__main__":
+#     data = """
+#     (define x 10)
+#     (define y (if (> x 5) (+ x 5) (- x 5)))
+#     (print-num y)
+#     """
+#     lexer.input(data)
+#     while token := lexer.token():
+#         print(token)
+# '''

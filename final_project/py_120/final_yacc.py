@@ -93,19 +93,13 @@ def evaluate(node, local_scope=None):
             else:
                 return ('FUN', params, body, scope) # 存環境
         elif op == 'CALL':  # 函數調用
-            function = evaluate(node[1], scope)  # node[1] 是 FUNC_expr 或 ID
+            function = evaluate(node[1], scope)  # 獲得 function，node[1] 可能是 FUNC_expr 或 ID
             args = [evaluate(param, scope) for param in node[2]]
 
             if type(function) == tuple and function[0] == 'FUN':
                 _, params, body, closure_scope = function
                 local_scope = {**closure_scope, **dict(zip(params, args))}  # 參數名綁引數值，解包並合併字典，這邊應會導致閉包跟原scope脫鉤，但測資不會重新賦值給變數
                 return evaluate(body, local_scope)
-            elif type(function) == str and function in variables:  # 已定義的命名函式
-                fun_def = variables[function]
-                if type(fun_def) == tuple and fun_def[0] == 'FUN':
-                    _, params, body, closure_scope = fun_def
-                    local_scope = {**closure_scope, **dict(zip(params, args))}
-                    return evaluate(body, local_scope)
             raise Exception(f"Invalid function call: {function}")
         elif op == 'IF':
             condition = evaluate(node[1], scope)
@@ -258,17 +252,17 @@ def p_error(p):
 # build parser
 parser = yacc.yacc()
 
-'''
-# debug mode
-if __name__ == "__main__":
-    data = """
-    (define dist-square
-    (fun (x y)
-    (define square (fun (x) (* x x)))
-    (+ (square x) (square y))))
+# '''
+# # debug mode
+# if __name__ == "__main__":
+#     data = """
+#     (define dist-square
+#     (fun (x y)
+#     (define square (fun (x) (* x x)))
+#     (+ (square x) (square y))))
 
-    (print-num (dist-square 3 4))
-    """
-    result = parser.parse(data,debug=True)
-    print(result)
-'''
+#     (print-num (dist-square 3 4))
+#     """
+#     result = parser.parse(data,debug=True)
+#     print(result)
+# '''
