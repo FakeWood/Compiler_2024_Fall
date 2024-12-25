@@ -74,7 +74,7 @@ t_ignore = ' \t\n\r'
 
 # error handling
 def t_error(t):
-    print(f"Syntax error: {t.value[0]}")
+    print(f"Unrecognize symbol: {t.value[0]}")
     t.lexer.skip(1)
 
 # build lexer
