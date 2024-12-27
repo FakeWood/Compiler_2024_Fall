@@ -1,0 +1,49 @@
+# 編譯器 final project
+
+用 python 實作出一個 Mini-LISP 的編譯器
+
+## 功能
+
+Basic、Bonus 皆完成
+
+### Basic Features
+
+| Feature | Description | Points |
+| --- | --- | --- |
+| Syntax Validation | Print “syntax error” when parsing invalid syntax | 10 |
+| Print Implement | print-num statement | 10 |
+| Numerical Operations | Implement all numerical operations | 25 |
+| Logical Operations | Implement all logical operations | 25 |
+| if Expression Implement | if expression | 8 | 
+| Variable Definition | Able to define a variable | 8 |
+| Function | Able to declare and call an anonymous function | 8 |
+| Named Function | Able to declare and call a named function | 6 |
+
+### Bonus Features
+
+| Feature | Description | Points |
+| --- | --- | --- |
+| Recursion | Support recursive function call | 5 |
+| Type Checking | Print error messages for type errors | 5 |
+| Nested Function | Nested function (static scope) | 5 |
+| First-class Function | Able to pass functions, support closure | 5 |
+
+## code
+
+分成 lex.py、yacc.py、main.py
+
+### lex.py
+
+負責做 lex 的事，切割字串
+
+### yacc.py
+
+負責做 yacc 的事，根據語法規則建構AST並執行
+
+### main.py
+
+負責開檔讀檔，呼叫 lex.py 跟 yacc.py
+
+## How to run
+
+python 環境中需有 ply 套件，將要編譯的 .lsp 檔都放進同一個資料夾，並在 main.py 中指定資料夾路徑後就可以直接執行 main.py

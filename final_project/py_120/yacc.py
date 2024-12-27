@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from final_lex import tokens
+from lex import tokens
 
 # 紀錄變數的globl set
 variables = {}
@@ -210,7 +210,7 @@ def p_fun_ids(p):
 
 def p_fun_body(p):
     '''func_body : expr
-                | def_stmt expr'''
+                 | def_stmt expr'''
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -218,7 +218,7 @@ def p_fun_body(p):
 
 def p_fun_call(p):
     '''func_call : LPAREN func_expr param_list RPAREN
-                | LPAREN ID param_list RPAREN'''
+                 | LPAREN ID param_list RPAREN'''
     if p[2][0] == 'FUN':
         p[0] = ('CALL', p[2], p[3])  # 匿名函數
     else:
